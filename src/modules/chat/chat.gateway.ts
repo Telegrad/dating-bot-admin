@@ -34,6 +34,7 @@ type OnPartnerFoundData = {
 
 type StopData = {
   chatId: number;
+  closedByYou?: boolean;
 };
 
 @WebSocketGateway({
@@ -85,10 +86,18 @@ export default class ChatGateway {
     const participant = await this.repository.stopConversation(data.chatId);
 
     if (participant) {
-      socket.emit('stop', { chatId: data.chatId } as StopData);
-      socket.emit('stop', {
-        chatId: participant.pairedWithTelegramUserChatId,
-      } as StopData);
+      const closedByYou = participant.chatId === data.chatId;
+      const closedByParticipant =
+        participant.pairedWithTelegramUserChatId === data.chatId;
+
+      socket.emit('stop', { chatId: data.chatId, closedByYou } as StopData);
+
+      if (participant.pairedWithTelegramUserChatId) {
+        socket.emit('stop', {
+          chatId: participant.pairedWithTelegramUserChatId,
+          closedByYou: closedByParticipant,
+        } as StopData);
+      }
     }
   }
 
@@ -97,41 +106,28 @@ export default class ChatGateway {
     @ConnectedSocket() socket: Socket,
     @MessageBody() data: SearchData,
   ) {
-    const _search = async () => {
-      const queueUser = await this.repository.getNextFromQueue(data.chatId);
-      const isPairedInQueue = await this.repository.isPairedInQueue(
-        data.chatId,
-      );
+    const queueUser = await this.repository.getNextFromQueue(data.chatId);
 
-      if (isPairedInQueue) {
-        return;
-      }
-
-      if (queueUser) {
-        await this.repository.matchUsersInQueue({
-          telegramUserId: queueUser.telegramUserId,
-          pairedWithTelegramUserChatId: data.chatId, // айдишник юзера что нажал /search
-        });
-        // notify partners about success match
-        socket.emit('partner-found', {
-          telegramUserId: queueUser.telegramUserId,
-          chatId: queueUser.chatId,
-        } as OnPartnerFoundData);
-        socket.emit('partner-found', {
-          telegramUserId: data.fromTelegramUserId,
-          chatId: data.chatId,
-        } as OnPartnerFoundData);
-        return;
-      } else {
-        console.log('add ot queue');
-        await this.repository.addToQueue({
-          telegramUserId: data.fromTelegramUserId,
-          chatId: data.chatId,
-        });
-        setTimeout(() => _search(), 2000); // повторить поиск через 2 сек
-      }
-    };
-
-    await _search();
+    if (queueUser) {
+      await this.repository.matchUsersInQueue({
+        telegramUserId: queueUser.telegramUserId,
+        pairedWithTelegramUserChatId: data.chatId, // айдишник юзера что нажал /search
+      });
+      // notify partners about success match
+      socket.emit('partner-found', {
+        telegramUserId: queueUser.telegramUserId,
+        chatId: queueUser.chatId,
+      } as OnPartnerFoundData);
+      socket.emit('partner-found', {
+        telegramUserId: data.fromTelegramUserId,
+        chatId: data.chatId,
+      } as OnPartnerFoundData);
+      return;
+    } else {
+      await this.repository.addToQueue({
+        telegramUserId: data.fromTelegramUserId,
+        chatId: data.chatId,
+      });
+    }
   }
 }
