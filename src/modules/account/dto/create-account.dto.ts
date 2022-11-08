@@ -1,4 +1,11 @@
-import { IsEnum, IsNotEmpty, IsString } from 'class-validator';
+import {
+  IsEnum,
+  IsInt,
+  IsNotEmpty,
+  IsOptional,
+  IsPositive,
+  IsString,
+} from 'class-validator';
 import { Gender } from '../account.entity';
 import { ApiProperty } from '@nestjs/swagger';
 
@@ -9,12 +16,18 @@ export default class CreateAccountDto {
   fullName: string;
 
   @ApiProperty()
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
   country: string;
 
   @ApiProperty({ enum: Gender })
-  @IsNotEmpty()
+  @IsOptional()
   @IsEnum(Gender)
   gender: Gender;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsInt()
+  @IsPositive()
+  telegramUserId: number;
 }

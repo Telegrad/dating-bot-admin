@@ -32,6 +32,10 @@ export default class AccountEntity extends BaseEntity {
   country: string;
 
   @ApiProperty()
+  @Column({ nullable: true })
+  telegramUserId: number;
+
+  @ApiProperty()
   @CreateDateColumn({ type: 'timestamp', name: 'created_at' })
   readonly createdAt: Date = new Date();
 

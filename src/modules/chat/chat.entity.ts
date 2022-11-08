@@ -15,6 +15,9 @@ export default class ChatEntity extends BaseEntity {
   @Column({ unique: true })
   chat_id: number;
 
+  @Column()
+  telegramUserId: number;
+
   @CreateDateColumn({ type: 'timestamp', name: 'created_at' })
   readonly createdAt: Date = new Date();
 

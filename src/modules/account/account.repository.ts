@@ -12,12 +12,24 @@ export class AccountRepository {
     @InjectRepository(AccountEntity) private model: Repository<AccountEntity>,
   ) {}
 
-  save(dto: CreateAccountDto) {
-    return this.model.save(dto);
+  async save(dto: CreateAccountDto) {
+    const account = await this.model.findOne({
+      where: { telegramUserId: dto.telegramUserId },
+    });
+
+    if (!account) {
+      return this.model.save(dto);
+    }
+
+    return account;
   }
 
   updateById(id: number, dto: UpdateAccountDto) {
     return this.model.update(id, dto);
+  }
+
+  updateByTelegramId(id: number, dto: UpdateAccountDto) {
+    return this.model.update({ telegramUserId: id }, dto);
   }
 
   deleteById(id: number) {

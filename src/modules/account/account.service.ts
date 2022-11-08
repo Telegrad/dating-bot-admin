@@ -20,6 +20,14 @@ export class AccountService {
     }
   }
 
+  async updateByTelegramId(id: number, dto: UpdateAccountDto) {
+    const { affected } = await this.repository.updateByTelegramId(id, dto);
+
+    if (affected === 0) {
+      throw new NotFoundException(`Account with ${id} not found`);
+    }
+  }
+
   async deleteById(id: number) {
     const { affected } = await this.repository.deleteById(id);
 

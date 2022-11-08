@@ -36,6 +36,15 @@ export class AccountController {
   }
 
   @ApiOkResponse()
+  @Put('telegram/:id')
+  updateByTelegramId(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() dto: UpdateAccountDto,
+  ) {
+    return this.service.updateByTelegramId(id, dto);
+  }
+
+  @ApiOkResponse()
   @ApiNotFoundResponse({ description: 'Account with such id not found' })
   @Delete(':id')
   deleteById(@Param('id', ParseIntPipe) id: number) {
