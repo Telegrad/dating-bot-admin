@@ -5,6 +5,7 @@ import ApiConfigModule from '../../common/config/api-config.module';
 import PostgresConfig from '../../common/config/postgres';
 import { AccountModule } from '../account/account.module';
 import { ChatModule } from '../chat/chat.module';
+import { PaymentModule } from '../payment/payment.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
@@ -29,6 +30,7 @@ import { AppService } from './app.service';
     }),
     AccountModule,
     ChatModule,
+    PaymentModule,
   ],
   controllers: [AppController],
   providers: [AppService],

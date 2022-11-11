@@ -6,7 +6,7 @@ import {
   IsPositive,
   IsString,
 } from 'class-validator';
-import { Gender } from '../account.entity';
+import { AccountLVL, Gender } from '../account.entity';
 import { ApiProperty } from '@nestjs/swagger';
 
 export default class CreateAccountDto {
@@ -30,4 +30,8 @@ export default class CreateAccountDto {
   @IsInt()
   @IsPositive()
   telegramUserId: number;
+
+  @ApiProperty()
+  @IsOptional()
+  accountLVL: AccountLVL;
 }

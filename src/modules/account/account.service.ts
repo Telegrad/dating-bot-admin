@@ -50,6 +50,18 @@ export class AccountService {
     return account;
   }
 
+  async getByTelegramId(id: number) {
+    const account = await this.repository.findByTelegramId(id);
+
+    if (!account) {
+      throw new NotFoundException(
+        `Account with telegramUserId ${id} not found`,
+      );
+    }
+
+    return account;
+  }
+
   async getList(query: GetAccountListDto) {
     return this.repository.find(query);
   }

@@ -13,6 +13,11 @@ export enum Gender {
   GIRL = 'girl',
 }
 
+export enum AccountLVL {
+  PRIME = 'prime',
+  GUEST = 'guest',
+}
+
 @Entity('accounts')
 export default class AccountEntity extends BaseEntity {
   @ApiProperty()
@@ -34,6 +39,10 @@ export default class AccountEntity extends BaseEntity {
   @ApiProperty()
   @Column({ nullable: true })
   telegramUserId: number;
+
+  @ApiProperty()
+  @Column({ enum: AccountLVL, nullable: true, default: AccountLVL.GUEST })
+  accountLVL: AccountLVL;
 
   @ApiProperty()
   @CreateDateColumn({ type: 'timestamp', name: 'created_at' })

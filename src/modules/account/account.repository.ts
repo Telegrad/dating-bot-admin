@@ -53,6 +53,10 @@ export class AccountRepository {
     return this.model.findOne({ where: { id } });
   }
 
+  findByTelegramId(id: number) {
+    return this.model.findOne({ where: { telegramUserId: id } });
+  }
+
   count() {
     return this.model.count();
   }
