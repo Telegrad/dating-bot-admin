@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { IsNull, Not, Repository } from 'typeorm';
+import AccountEntity, { Gender } from '../account/account.entity';
 import ChatEntity from './chat.entity';
 import CreateChatDto from './dto/create-chat.dto';
 import GetChatsListQueryDto from './dto/get-chats-list-query.dto';
@@ -15,6 +16,8 @@ type MatchUsersInQueueData = {
 type AddToQueueData = {
   telegramUserId: number;
   chatId: number;
+  onlyGender?: Gender;
+  userGender: Gender;
 };
 
 type FindPairedUser = {
@@ -88,13 +91,44 @@ export default class ChatRepository {
     );
   }
 
-  async getNextFromQueue(chatId: number) {
-    const user = await this.queueModel.find({
-      take: 1,
-      where: { pairedWithTelegramUserChatId: IsNull(), chatId: Not(chatId) },
-    });
+  async getNextFromQueue(
+    chatId: number,
+    account: AccountEntity,
+    gender?: Gender,
+  ) {
+    const baseConditions = {
+      pairedWithTelegramUserChatId: IsNull(),
+      chatId: Not(chatId),
+    };
+    let user = null;
 
-    return user.length ? user[0] : null;
+    // если у чела есть пол и он не ищет по полу
+    if (account.gender && !gender) {
+      user = await this.queueModel.findOne({
+        where: { ...baseConditions, onlyGender: account.gender },
+      });
+    }
+
+    if (!user) {
+      // если у человека есть пол или нет но он ищет по полу
+      if ((account.gender && gender) || (!account.gender && gender)) {
+        user = await this.queueModel.findOne({
+          where: {
+            ...baseConditions,
+            userGender: gender,
+          },
+        });
+      } else {
+        // если по onlyGender не нашло
+        user = await this.queueModel.findOne({
+          where: {
+            ...baseConditions,
+          },
+        });
+      }
+    }
+
+    return user ?? null;
   }
 
   async isPairedInQueue(chatId: number): Promise<boolean> {

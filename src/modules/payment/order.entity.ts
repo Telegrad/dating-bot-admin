@@ -23,6 +23,9 @@ export default class OrderEntity extends BaseEntity {
   @Column({ nullable: false })
   accountID: number;
 
+  @Column({ default: 0 })
+  productCount: number;
+
   @Column({ enum: OrderStatus, nullable: false, default: OrderStatus.NEW })
   status: OrderStatus;
 

@@ -1,4 +1,5 @@
 import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Gender } from '../account/account.entity';
 
 @Entity('chat_queue')
 export default class QueueEntity extends BaseEntity {
@@ -13,4 +14,10 @@ export default class QueueEntity extends BaseEntity {
 
   @Column({ nullable: true })
   pairedWithTelegramUserChatId?: number;
+
+  @Column({ nullable: true })
+  onlyGender?: Gender;
+
+  @Column({ nullable: true })
+  userGender?: Gender;
 }

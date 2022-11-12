@@ -1,3 +1,4 @@
+import { NotFoundException } from '@nestjs/common';
 import {
   ConnectedSocket,
   MessageBody,
@@ -6,6 +7,8 @@ import {
   WebSocketServer,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
+import { AccountLVL, Gender } from '../account/account.entity';
+import { AccountService } from '../account/account.service';
 import ChatRepository from './chat.repository';
 
 type OnBotStartData = {
@@ -25,6 +28,7 @@ type OnMessageData = {
 type SearchData = {
   chatId: number;
   fromTelegramUserId: number;
+  gender?: Gender;
 };
 
 type OnPartnerFoundData = {
@@ -37,13 +41,20 @@ type StopData = {
   closedByYou?: boolean;
 };
 
+type NoPrimeAccountData = {
+  chatID: number;
+};
+
 @WebSocketGateway({
   cors: {
     origin: '*',
   },
 })
 export default class ChatGateway {
-  constructor(private repository: ChatRepository) {}
+  constructor(
+    private repository: ChatRepository,
+    private accountService: AccountService,
+  ) {}
 
   @WebSocketServer()
   server: Server;
@@ -106,7 +117,30 @@ export default class ChatGateway {
     @ConnectedSocket() socket: Socket,
     @MessageBody() data: SearchData,
   ) {
-    const queueUser = await this.repository.getNextFromQueue(data.chatId);
+    const account = await this.accountService.getByTelegramId(
+      data.fromTelegramUserId,
+    );
+
+    if (data.gender) {
+      if (!account) {
+        throw new NotFoundException(
+          `No account with ${data.fromTelegramUserId} telegram id`,
+        );
+      }
+
+      if (account.accountLVL !== AccountLVL.PRIME) {
+        socket.emit('no-prime-account', {
+          chatID: data.fromTelegramUserId,
+        } as NoPrimeAccountData);
+        return;
+      }
+    }
+
+    const queueUser = await this.repository.getNextFromQueue(
+      data.chatId,
+      account,
+      data.gender,
+    );
 
     if (queueUser) {
       await this.repository.matchUsersInQueue({
@@ -127,6 +161,8 @@ export default class ChatGateway {
       await this.repository.addToQueue({
         telegramUserId: data.fromTelegramUserId,
         chatId: data.chatId,
+        onlyGender: data.gender,
+        userGender: account.gender,
       });
     }
   }

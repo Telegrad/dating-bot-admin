@@ -58,6 +58,13 @@ export class AccountController {
     return this.service.getById(id);
   }
 
+  @ApiOkResponse({ type: AccountEntity })
+  @ApiNotFoundResponse({ description: 'Account with such id not found' })
+  @Get('telegram/:id')
+  getByTelegramId(@Param('id', ParseIntPipe) id: number) {
+    return this.service.getByTelegramId(id);
+  }
+
   @ApiOkResponse({ type: AccountEntity, isArray: true })
   @Get()
   getList(@Query() query: GetAccountListDto) {

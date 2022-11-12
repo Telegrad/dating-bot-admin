@@ -34,4 +34,12 @@ export default class CreateAccountDto {
   @ApiProperty()
   @IsOptional()
   accountLVL: AccountLVL;
+
+  @ApiProperty()
+  @IsOptional()
+  coins?: number;
+
+  @ApiProperty()
+  @IsOptional()
+  accountLVLExpiredAt?: string;
 }

@@ -41,8 +41,16 @@ export default class AccountEntity extends BaseEntity {
   telegramUserId: number;
 
   @ApiProperty()
-  @Column({ enum: AccountLVL, nullable: true, default: AccountLVL.GUEST })
+  @Column({ enum: AccountLVL, default: AccountLVL.GUEST })
   accountLVL: AccountLVL;
+
+  @ApiProperty()
+  @Column({ default: 0 })
+  coins: number;
+
+  @ApiProperty()
+  @Column({ nullable: true })
+  accountLVLExpiredAt: string;
 
   @ApiProperty()
   @CreateDateColumn({ type: 'timestamp', name: 'created_at' })
