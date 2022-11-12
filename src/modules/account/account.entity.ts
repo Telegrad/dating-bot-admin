@@ -7,6 +7,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
+import { v4 } from 'uuid';
 
 export enum Gender {
   BOY = 'boy',
@@ -51,6 +52,14 @@ export default class AccountEntity extends BaseEntity {
   @ApiProperty()
   @Column({ nullable: true })
   accountLVLExpiredAt: string;
+
+  @ApiProperty()
+  @Column({ nullable: true })
+  referralCode: number;
+
+  @ApiProperty()
+  @Column({ nullable: true })
+  invitedByReferralCode: number;
 
   @ApiProperty()
   @CreateDateColumn({ type: 'timestamp', name: 'created_at' })

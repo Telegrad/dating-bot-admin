@@ -8,7 +8,7 @@ import UpdateAccountDto from './dto/update-account.dto';
 export class AccountService {
   constructor(private repository: AccountRepository) {}
 
-  create(dto: CreateAccountDto) {
+  async create(dto: CreateAccountDto) {
     return this.repository.save(dto);
   }
 

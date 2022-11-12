@@ -42,4 +42,8 @@ export default class CreateAccountDto {
   @ApiProperty()
   @IsOptional()
   accountLVLExpiredAt?: string;
+
+  @ApiProperty()
+  @IsOptional()
+  invitedByReferralCode?: number;
 }

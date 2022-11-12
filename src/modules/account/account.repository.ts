@@ -18,7 +18,13 @@ export class AccountRepository {
     });
 
     if (!account) {
-      return this.model.save(dto);
+      if (dto.invitedByReferralCode) {
+        await this.applyReferralCode(dto.invitedByReferralCode);
+      }
+      return this.model.save({
+        ...dto,
+        referralCode: dto.telegramUserId,
+      });
     }
 
     return account;
@@ -59,5 +65,13 @@ export class AccountRepository {
 
   count() {
     return this.model.count();
+  }
+
+  async applyReferralCode(referralCode: number) {
+    const acc = await this.model.findOne({ where: { referralCode } });
+
+    if (acc) {
+      await this.model.update(acc.id, { coins: acc.coins + 10 });
+    }
   }
 }
