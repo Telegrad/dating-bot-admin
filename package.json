@@ -48,7 +48,8 @@
     "typeorm": "0.3.10",
     "utf8": "3.0.0",
     "uuid": "9.0.0",
-    "wayforpay": "^0.1.0"
+    "wayforpay": "^0.1.0",
+    "yoomoney-sdk": "^1.5.5"
   },
   "devDependencies": {
     "@nestjs/cli": "9.1.5",
