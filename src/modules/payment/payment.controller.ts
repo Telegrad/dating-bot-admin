@@ -21,8 +21,12 @@ import QiwiConfig from 'src/common/config/qiwi';
 import moment from 'moment';
 import QiwiCreateInvoiceDto from './dto/qiwi-create-invoice.dto';
 
+import { API, Auth, AuthScope } from 'yoomoney-sdk';
+import UMoneyConfig from 'src/common/config/umoney';
+import UMoneyWebhookDto from './dto/umoney-webhook.dto';
+
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const QiwiBillPaymentsAPI = require('@qiwi/bill-payments-node-js-sdk');
+// const QiwiBillPaymentsAPI = require('@qiwi/bill-payments-node-js-sdk');
 
 @Controller('payment')
 export class PaymentController {
@@ -30,6 +34,7 @@ export class PaymentController {
     private wpayConfig: WpayConfig,
     private qiwiConfig: QiwiConfig,
     private accountService: AccountService,
+    private umoneyConfig: UMoneyConfig,
     @InjectRepository(OrderEntity) private orderModel: Repository<OrderEntity>,
   ) {}
 
@@ -110,27 +115,70 @@ export class PaymentController {
     return params;
   }
 
-  @Get('qiwi-invoice')
-  async createQiwiInvoice(@Query() dto: QiwiCreateInvoiceDto) {
-    const qiwiApi = new QiwiBillPaymentsAPI(this.qiwiConfig.secretKey);
-    const billId = v4();
+  @Get('umoney-invoice-form')
+  async createUmoneyInvoice(@Query() dto: QiwiCreateInvoiceDto) {
+    const orderID = v4();
+    const account = await this.accountService.getByTelegramId(
+      dto.telegramUserId,
+    );
 
-    const fields = {
-      amount: 100,
-      currency: 'RUB',
-      comment: 'Prime account',
-      expirationDateTime: moment().add('2', 'hours').toString(),
-      account: dto.telegramUserId,
-      successUrl: this.qiwiConfig.webhookEndpoint,
-    };
+    if (!account) {
+      throw new NotFoundException(
+        `No account with ${dto.telegramUserId} telegram id`,
+      );
+    }
 
-    const { payUrl } = await qiwiApi.createBill(billId, fields);
+    await this.orderModel.save({
+      orderID,
+      accountID: account.id,
+      productCount: dto.productCount,
+    });
 
-    return payUrl;
+    return `<form method="POST" action="https://yoomoney.ru/quickpay/confirm.xml">
+      <input type="hidden" name="receiver" value="${
+        this.umoneyConfig.receiverAddress
+      }"/>
+      <input type="hidden" name="targets" value="Покупка монет в боте t.me/chatvdvoembot">
+      <input type="hidden" name="label" value="${orderID}"/>
+      <input type="hidden" name="quickpay-form" value="shop"/>
+      <input type="hidden" name="sum" value="${
+        dto.productCount * dto.productPrice
+      }" data-type="number"/>
+      <input type="hidden" name="paymentType" value="AC"/>
+      <input type="hidden" name="successURL" value="${
+        this.umoneyConfig.redirectUrl
+      }">
+
+      <input type="submit" value="Оплатить"/>
+    </form>`;
   }
 
-  @Post('qiwi-invoice-success')
-  async onQiwiInvoiceSuccess(@Body() dto: any, @Query() query: any) {
-    console.log('dto', dto);
+  @Post('umoney-invoice-success')
+  async onUmoneyInvoiceSuccess(@Body() dto: UMoneyWebhookDto) {
+    const purchaseOrderID = dto.label;
+
+    const order = await this.orderModel.findOne({
+      where: { orderID: purchaseOrderID },
+    });
+
+    if (!order) {
+      throw new NotFoundException(`No order with ${order.id} id`);
+    }
+
+    const account = await this.accountService.getById(order.accountID);
+
+    if (!account) {
+      throw new NotFoundException(`No account with ${account.id} id`);
+    }
+
+    await this.orderModel.update(
+      { orderID: purchaseOrderID },
+      { status: OrderStatus.COMPLETE },
+    );
+
+    await this.accountService.updateById(order.accountID, {
+      accountLVL: AccountLVL.PRIME,
+      coins: Number(account.coins) + Number(order.productCount),
+    });
   }
 }

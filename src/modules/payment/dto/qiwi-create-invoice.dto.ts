@@ -5,4 +5,12 @@ export default class QiwiCreateInvoiceDto {
   @ApiProperty()
   @IsNotEmpty()
   telegramUserId: number;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  productCount: number;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  productPrice: number;
 }
