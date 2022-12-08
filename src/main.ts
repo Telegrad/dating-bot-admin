@@ -19,7 +19,15 @@ async function bootstrap() {
 
   app.enableCors();
   app.use(helmet());
-  app.useGlobalPipes(new ValidationPipe({ transform: true }));
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transform: true,
+      exceptionFactory: (errors) => {
+        console.log(errors);
+        return errors;
+      },
+    }),
+  );
 
   const { port } = app.get(ServerConfig);
 
