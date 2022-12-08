@@ -6,14 +6,14 @@ export default class QueueEntity extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ unique: true })
-  telegramUserId: number;
+  @Column({ unique: true, type: 'bigint' })
+  telegramUserId: string;
 
-  @Column()
-  chatId: number;
+  @Column({ type: 'bigint' })
+  chatId: string;
 
-  @Column({ nullable: true })
-  pairedWithTelegramUserChatId?: number;
+  @Column({ nullable: true, type: 'bigint' })
+  pairedWithTelegramUserChatId?: string;
 
   @Column({ nullable: true })
   onlyGender?: Gender;

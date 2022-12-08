@@ -20,7 +20,7 @@ export class AccountService {
     }
   }
 
-  async updateByTelegramId(id: number, dto: UpdateAccountDto) {
+  async updateByTelegramId(id: string, dto: UpdateAccountDto) {
     const { affected } = await this.repository.updateByTelegramId(id, dto);
 
     if (affected === 0) {
@@ -50,7 +50,7 @@ export class AccountService {
     return account;
   }
 
-  async getByTelegramId(id: number) {
+  async getByTelegramId(id: string) {
     const account = await this.repository.findByTelegramId(id);
 
     if (!account) {

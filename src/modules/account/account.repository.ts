@@ -14,7 +14,7 @@ export class AccountRepository {
 
   async save(dto: CreateAccountDto) {
     const account = await this.model.findOne({
-      where: { telegramUserId: dto.telegramUserId },
+      where: { telegramUserId: dto.telegramUserId.toString() },
     });
 
     if (!account) {
@@ -23,6 +23,7 @@ export class AccountRepository {
       }
       return this.model.save({
         ...dto,
+        telegramUserId: dto.telegramUserId.toString(),
         referralCode: dto.telegramUserId,
       });
     }
@@ -31,11 +32,17 @@ export class AccountRepository {
   }
 
   updateById(id: number, dto: UpdateAccountDto) {
-    return this.model.update(id, dto);
+    return this.model.update(id, {
+      ...dto,
+      telegramUserId: dto.telegramUserId.toString(),
+    });
   }
 
-  updateByTelegramId(id: number, dto: UpdateAccountDto) {
-    return this.model.update({ telegramUserId: id }, dto);
+  updateByTelegramId(id: string, dto: UpdateAccountDto) {
+    return this.model.update(
+      { telegramUserId: id },
+      { ...dto, telegramUserId: dto.telegramUserId.toString() },
+    );
   }
 
   deleteById(id: number) {
@@ -59,7 +66,7 @@ export class AccountRepository {
     return this.model.findOne({ where: { id } });
   }
 
-  findByTelegramId(id: number) {
+  findByTelegramId(id: string) {
     return this.model.findOne({ where: { telegramUserId: id } });
   }
 

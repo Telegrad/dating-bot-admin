@@ -4,9 +4,9 @@ import { ApiProperty } from '@nestjs/swagger';
 export default class CreateChatDto {
   @ApiProperty()
   @IsNotEmpty()
-  chat_id: number;
+  chat_id: string;
 
   @ApiProperty()
   @IsNotEmpty()
-  telegramUserId: number;
+  telegramUserId: string;
 }

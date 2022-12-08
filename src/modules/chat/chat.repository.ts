@@ -9,20 +9,20 @@ import UpdateChatDto from './dto/update-chat.dto';
 import QueueEntity from './queue.entity';
 
 type MatchUsersInQueueData = {
-  telegramUserId: number;
-  pairedWithTelegramUserChatId: number;
+  telegramUserId: string;
+  pairedWithTelegramUserChatId: string;
 };
 
 type AddToQueueData = {
-  telegramUserId: number;
-  chatId: number;
+  telegramUserId: string;
+  chatId: string;
   onlyGender?: Gender;
   userGender: Gender;
 };
 
 type FindPairedUser = {
-  telegramUserId: number;
-  chatId: number;
+  telegramUserId: string;
+  chatId: string;
 };
 
 @Injectable()
@@ -92,7 +92,7 @@ export default class ChatRepository {
   }
 
   async getNextFromQueue(
-    chatId: number,
+    chatId: string,
     account: AccountEntity,
     gender?: Gender,
   ) {
@@ -131,7 +131,7 @@ export default class ChatRepository {
     return user ?? null;
   }
 
-  async isPairedInQueue(chatId: number): Promise<boolean> {
+  async isPairedInQueue(chatId: string): Promise<boolean> {
     const v = await this.queueModel.findOne({
       where: {
         pairedWithTelegramUserChatId: IsNull(),
@@ -146,7 +146,7 @@ export default class ChatRepository {
     return false;
   }
 
-  async findPairedUser(params: FindPairedUser): Promise<number | null> {
+  async findPairedUser(params: FindPairedUser): Promise<string | null> {
     // const user = await this.queueModel.findOne({
     //   where: [
     //     {
@@ -179,7 +179,7 @@ export default class ChatRepository {
     return null;
   }
 
-  async stopConversation(chatId: number): Promise<QueueEntity> {
+  async stopConversation(chatId: string): Promise<QueueEntity> {
     const v = await this.queueModel.findOne({
       where: [{ chatId }, { pairedWithTelegramUserChatId: chatId }],
     });

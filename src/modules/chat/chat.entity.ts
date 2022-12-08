@@ -12,11 +12,11 @@ export default class ChatEntity extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ unique: true })
-  chat_id: number;
+  @Column({ unique: true, type: 'bigint' })
+  chat_id: string;
 
-  @Column()
-  telegramUserId: number;
+  @Column({ type: 'bigint' })
+  telegramUserId: string;
 
   @CreateDateColumn({ type: 'timestamp', name: 'created_at' })
   readonly createdAt: Date = new Date();

@@ -12,37 +12,37 @@ import { AccountService } from '../account/account.service';
 import ChatRepository from './chat.repository';
 
 type OnBotStartData = {
-  telegramUserId: number;
-  chatId: number;
+  telegramUserId: string;
+  chatId: string;
 };
 
 type SocketMessageType = 'video' | 'photo' | 'text' | 'voice' | 'video_note';
 
 type OnMessageData = {
-  chatId: number;
-  fromTelegramUserId: number;
+  chatId: string;
+  fromTelegramUserId: string;
   value: string | number;
   type: SocketMessageType;
 };
 
 type SearchData = {
-  chatId: number;
-  fromTelegramUserId: number;
+  chatId: string;
+  fromTelegramUserId: string;
   gender?: Gender;
 };
 
 type OnPartnerFoundData = {
-  chatId: number;
-  telegramUserId: number;
+  chatId: string;
+  telegramUserId: string;
 };
 
 type StopData = {
-  chatId: number;
+  chatId: string;
   closedByYou?: boolean;
 };
 
 type NoPrimeAccountData = {
-  chatID: number;
+  chatID: string;
 };
 
 @WebSocketGateway({
@@ -65,8 +65,8 @@ export default class ChatGateway {
     @MessageBody() data: OnMessageData,
   ) {
     const pairedUserChatId = await this.repository.findPairedUser({
-      telegramUserId: data.fromTelegramUserId,
-      chatId: data.chatId,
+      telegramUserId: data.fromTelegramUserId.toString(),
+      chatId: data.chatId.toString(),
     });
 
     if (pairedUserChatId) {
@@ -118,7 +118,7 @@ export default class ChatGateway {
     @MessageBody() data: SearchData,
   ) {
     const account = await this.accountService.getByTelegramId(
-      data.fromTelegramUserId,
+      data.fromTelegramUserId.toString(),
     );
 
     if (data.gender) {

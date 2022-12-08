@@ -41,7 +41,7 @@ export class AccountController {
     @Param('id', ParseIntPipe) id: number,
     @Body() dto: UpdateAccountDto,
   ) {
-    return this.service.updateByTelegramId(id, dto);
+    return this.service.updateByTelegramId(id.toString(), dto);
   }
 
   @ApiOkResponse()
@@ -62,7 +62,7 @@ export class AccountController {
   @ApiNotFoundResponse({ description: 'Account with such id not found' })
   @Get('telegram/:id')
   getByTelegramId(@Param('id', ParseIntPipe) id: number) {
-    return this.service.getByTelegramId(id);
+    return this.service.getByTelegramId(id.toString());
   }
 
   @ApiOkResponse({ type: AccountEntity, isArray: true })

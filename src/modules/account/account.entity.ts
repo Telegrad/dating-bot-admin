@@ -38,8 +38,8 @@ export default class AccountEntity extends BaseEntity {
   country: string;
 
   @ApiProperty()
-  @Column({ nullable: true })
-  telegramUserId: number;
+  @Column({ nullable: true, type: 'bigint' })
+  telegramUserId: string;
 
   @ApiProperty()
   @Column({ enum: AccountLVL, default: AccountLVL.GUEST })

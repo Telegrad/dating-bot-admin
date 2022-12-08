@@ -6,7 +6,6 @@ import {
   Post,
   Query,
 } from '@nestjs/common';
-import { PaymentService } from './payment.service';
 import WpayConfig from 'src/common/config/wpay';
 import WpayCreateInvoiceDto from './dto/wpay-create-invoice.dto';
 import { createHmac } from 'crypto';
@@ -18,15 +17,10 @@ import OrderEntity, { OrderStatus } from './order.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { AccountLVL } from '../account/account.entity';
 import QiwiConfig from 'src/common/config/qiwi';
-import moment from 'moment';
 import QiwiCreateInvoiceDto from './dto/qiwi-create-invoice.dto';
 
-import { API, Auth, AuthScope } from 'yoomoney-sdk';
 import UMoneyConfig from 'src/common/config/umoney';
 import UMoneyWebhookDto from './dto/umoney-webhook.dto';
-
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-// const QiwiBillPaymentsAPI = require('@qiwi/bill-payments-node-js-sdk');
 
 @Controller('payment')
 export class PaymentController {
@@ -71,7 +65,7 @@ export class PaymentController {
 
     const orderID = v4();
     const account = await this.accountService.getByTelegramId(
-      dto.telegramUserId,
+      dto.telegramUserId.toString(),
     );
 
     if (!account) {
@@ -119,7 +113,7 @@ export class PaymentController {
   async createUmoneyInvoice(@Query() dto: QiwiCreateInvoiceDto) {
     const orderID = v4();
     const account = await this.accountService.getByTelegramId(
-      dto.telegramUserId,
+      dto.telegramUserId.toString(),
     );
 
     if (!account) {
