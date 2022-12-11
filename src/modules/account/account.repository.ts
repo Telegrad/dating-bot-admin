@@ -19,12 +19,13 @@ export class AccountRepository {
 
     if (!account) {
       if (dto.invitedByReferralCode) {
-        await this.applyReferralCode(dto.invitedByReferralCode);
+        await this.applyReferralCode(dto?.invitedByReferralCode?.toString());
       }
       return this.model.save({
         ...dto,
+        invitedByReferralCode: dto?.invitedByReferralCode?.toString(),
         telegramUserId: dto.telegramUserId.toString(),
-        referralCode: dto.telegramUserId,
+        referralCode: dto.telegramUserId.toString(),
       });
     }
 
@@ -34,6 +35,7 @@ export class AccountRepository {
   updateById(id: number, dto: UpdateAccountDto) {
     return this.model.update(id, {
       ...dto,
+      invitedByReferralCode: dto?.invitedByReferralCode?.toString(),
       telegramUserId: dto.telegramUserId.toString(),
     });
   }
@@ -41,7 +43,11 @@ export class AccountRepository {
   updateByTelegramId(id: string, dto: UpdateAccountDto) {
     return this.model.update(
       { telegramUserId: id },
-      { ...dto, telegramUserId: dto.telegramUserId.toString() },
+      {
+        ...dto,
+        invitedByReferralCode: dto?.invitedByReferralCode?.toString(),
+        telegramUserId: dto.telegramUserId.toString(),
+      },
     );
   }
 
@@ -74,7 +80,7 @@ export class AccountRepository {
     return this.model.count();
   }
 
-  async applyReferralCode(referralCode: number) {
+  async applyReferralCode(referralCode: string) {
     const acc = await this.model.findOne({ where: { referralCode } });
 
     if (acc) {

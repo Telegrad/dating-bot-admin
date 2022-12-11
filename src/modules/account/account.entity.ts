@@ -54,12 +54,12 @@ export default class AccountEntity extends BaseEntity {
   accountLVLExpiredAt: string;
 
   @ApiProperty()
-  @Column({ nullable: true })
-  referralCode: number;
+  @Column({ nullable: true, type: 'bigint' })
+  referralCode: string;
 
   @ApiProperty()
-  @Column({ nullable: true })
-  invitedByReferralCode: number;
+  @Column({ nullable: true, type: 'bigint' })
+  invitedByReferralCode: string;
 
   @ApiProperty()
   @CreateDateColumn({ type: 'timestamp', name: 'created_at' })
