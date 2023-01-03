@@ -124,17 +124,14 @@ export default class ChatGateway {
           closedByYou: !closedByYou,
         } as StopData;
 
-        if (closedByYou) {
-          // if i am the paired user
-          if (
-            firstNotificationChatID === participant.pairedWithTelegramUserChatId
-          ) {
-            secondNotificationData.chatId = participant.chatId;
-          } else {
-            secondNotificationData.chatId =
-              participant.pairedWithTelegramUserChatId;
-          }
+        // if i am the paired user
+        if (data.telegramUserID === participant.pairedWithTelegramUserChatId) {
+          secondNotificationData.chatId = participant.chatId;
+        } else {
+          secondNotificationData.chatId =
+            participant.pairedWithTelegramUserChatId;
         }
+
         socket.emit('stop', secondNotificationData);
         // socket.emit('stop', {
         //   chatId:
