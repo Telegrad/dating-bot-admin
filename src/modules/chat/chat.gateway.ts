@@ -124,6 +124,8 @@ export default class ChatGateway {
           closedByYou: !closedByYou,
         } as StopData;
 
+        console.log('data', data);
+        console.log('participant', participant);
         // if i am the paired user
         if (data.telegramUserID === participant.pairedWithTelegramUserChatId) {
           secondNotificationData.chatId = participant.chatId;
