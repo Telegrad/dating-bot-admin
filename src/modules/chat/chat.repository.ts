@@ -30,6 +30,8 @@ export default class ChatRepository {
   constructor(
     @InjectRepository(ChatEntity) private model: Repository<ChatEntity>,
     @InjectRepository(QueueEntity) private queueModel: Repository<QueueEntity>,
+    @InjectRepository(AccountEntity)
+    private accountModel: Repository<AccountEntity>,
   ) {}
 
   async save(dto: CreateChatDto) {
@@ -83,6 +85,16 @@ export default class ChatRepository {
   }
 
   async matchUsersInQueue(data: MatchUsersInQueueData) {
+    await Promise.all([
+      this.accountModel.update(
+        { telegramUserId: data.telegramUserId },
+        { lastConversationUserID: data.pairedWithTelegramUserChatId },
+      ),
+      this.accountModel.update(
+        { telegramUserId: data.pairedWithTelegramUserChatId },
+        { lastConversationUserID: data.telegramUserId },
+      ),
+    ]);
     return this.queueModel.update(
       { telegramUserId: data.telegramUserId },
       {
@@ -99,6 +111,7 @@ export default class ChatRepository {
     const baseConditions = {
       pairedWithTelegramUserChatId: IsNull(),
       chatId: Not(chatId),
+      telegramUserId: Not(account.lastConversationUserID),
     };
     let user = null;
 

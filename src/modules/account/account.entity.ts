@@ -61,6 +61,10 @@ export default class AccountEntity extends BaseEntity {
   invitedByReferralCode: string;
 
   @ApiProperty()
+  @Column({ nullable: true, type: 'bigint' })
+  lastConversationUserID: string;
+
+  @ApiProperty()
   @CreateDateColumn({ type: 'timestamp', name: 'created_at' })
   readonly createdAt: Date = new Date();
 
