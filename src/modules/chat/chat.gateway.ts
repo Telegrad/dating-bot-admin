@@ -98,7 +98,7 @@ export default class ChatGateway {
     const participant = await this.repository.stopConversation(data.chatId);
 
     if (participant) {
-      const closedByYou = participant.chatId === data.chatId;
+      const closedByYou = participant.chatId !== data.chatId;
 
       socket.emit('stop', { chatId: data.chatId, closedByYou } as StopData);
 
