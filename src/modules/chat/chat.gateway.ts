@@ -107,9 +107,10 @@ export default class ChatGateway {
 
       if (participant.pairedWithTelegramUserChatId) {
         socket.emit('stop', {
-          chatId: closedByYou
-            ? participant.chatId
-            : participant.pairedWithTelegramUserChatId,
+          chatId:
+            closedByYou && data.telegramUserID !== participant.chatId
+              ? participant.chatId
+              : participant.pairedWithTelegramUserChatId,
           closedByYou: !closedByYou,
         } as StopData);
       }
