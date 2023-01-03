@@ -22,6 +22,7 @@ type OnMessageData = {
   chatId: string;
   fromTelegramUserId: string;
   value: string | number;
+  replyMessageId?: number;
   type: SocketMessageType;
 };
 
@@ -75,6 +76,7 @@ export default class ChatGateway {
         value: data.value,
         type: data.type,
         chatId: pairedUserChatId,
+        replyMessageId: Number(data.replyMessageId),
       } as OnMessageData);
     }
   }
