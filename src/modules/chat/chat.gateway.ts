@@ -118,10 +118,9 @@ export default class ChatGateway {
         // } as StopData;
 
         const secondNotificationData = {
-          chatId:
-            firstNotificationChatID === participant.pairedWithTelegramUserChatId
-              ? participant.chatId
-              : participant.pairedWithTelegramUserChatId,
+          chatId: closedByYou
+            ? participant.pairedWithTelegramUserChatId
+            : participant.chatId,
           closedByYou: !closedByYou,
         } as StopData;
 
