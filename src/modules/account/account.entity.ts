@@ -7,7 +7,6 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
-import { v4 } from 'uuid';
 
 export enum Gender {
   BOY = 'boy',

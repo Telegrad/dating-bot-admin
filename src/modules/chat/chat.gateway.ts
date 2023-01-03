@@ -39,6 +39,7 @@ type OnPartnerFoundData = {
 type StopData = {
   chatId: string;
   closedByYou?: boolean;
+  telegramUserID: string;
 };
 
 type NoPrimeAccountData = {
@@ -98,15 +99,13 @@ export default class ChatGateway {
 
     if (participant) {
       const closedByYou = participant.chatId === data.chatId;
-      const closedByParticipant =
-        participant.pairedWithTelegramUserChatId === data.chatId;
 
       socket.emit('stop', { chatId: data.chatId, closedByYou } as StopData);
 
       if (participant.pairedWithTelegramUserChatId) {
         socket.emit('stop', {
           chatId: participant.pairedWithTelegramUserChatId,
-          closedByYou: closedByParticipant,
+          closedByYou: !closedByYou,
         } as StopData);
       }
     }
