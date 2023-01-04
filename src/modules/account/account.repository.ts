@@ -1,10 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DeepPartial, Repository } from 'typeorm';
-import AccountEntity from './account.entity';
+import AccountEntity, { AccountLVL } from './account.entity';
 import CreateAccountDto from './dto/create-account.dto';
 import GetAccountListDto from './dto/get-account-list.dto';
 import UpdateAccountDto from './dto/update-account.dto';
+import moment from 'moment';
 
 @Injectable()
 export class AccountRepository {
@@ -21,8 +22,11 @@ export class AccountRepository {
       if (dto.invitedByReferralCode) {
         await this.applyReferralCode(dto?.invitedByReferralCode?.toString());
       }
+      // TODO: remove after New YEAR Discount
       return this.model.save({
         ...dto,
+        accountLVL: AccountLVL.PRIME,
+        accountLVLExpiredAt: moment().add('3', 'days').toString(),
         invitedByReferralCode: dto?.invitedByReferralCode?.toString(),
         telegramUserId: dto.telegramUserId.toString(),
         referralCode: dto.telegramUserId.toString(),
