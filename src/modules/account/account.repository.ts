@@ -5,7 +5,7 @@ import AccountEntity, { AccountLVL } from './account.entity';
 import CreateAccountDto from './dto/create-account.dto';
 import GetAccountListDto from './dto/get-account-list.dto';
 import UpdateAccountDto from './dto/update-account.dto';
-import moment from 'moment';
+import * as moment from 'moment';
 
 @Injectable()
 export class AccountRepository {
