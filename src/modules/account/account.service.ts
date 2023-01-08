@@ -65,4 +65,8 @@ export class AccountService {
   async getList(query: GetAccountListDto) {
     return this.repository.find(query);
   }
+
+  async getReferralsStatistics(userID: number) {
+    return this.repository.referralsStatistics(userID);
+  }
 }

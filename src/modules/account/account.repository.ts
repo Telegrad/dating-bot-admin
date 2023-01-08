@@ -91,4 +91,18 @@ export class AccountRepository {
       await this.model.update(acc.id, { coins: acc.coins + 10 });
     }
   }
+
+  async referralsStatistics(userID: number) {
+    const account = await this.model.findOne({
+      where: { telegramUserId: userID.toString() },
+    });
+    const count = await this.model.count({
+      where: { invitedByReferralCode: account.referralCode },
+    });
+
+    return {
+      referrals: count,
+      amount: count * 10,
+    };
+  }
 }

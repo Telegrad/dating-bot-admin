@@ -107,6 +107,7 @@ export default class ChatGateway {
 
       socket.emit('stop', {
         chatId: firstNotificationChatID,
+        telegramUserID: data.telegramUserID,
         closedByYou,
       } as StopData);
 
@@ -124,6 +125,7 @@ export default class ChatGateway {
           //   ? participant.pairedWithTelegramUserChatId
           //   : participant.chatId,
           closedByYou: !closedByYou,
+          telegramUserID: data.telegramUserID
         } as StopData;
 
         console.log('data', data);

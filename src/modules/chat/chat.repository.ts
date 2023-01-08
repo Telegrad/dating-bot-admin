@@ -85,16 +85,16 @@ export default class ChatRepository {
   }
 
   async matchUsersInQueue(data: MatchUsersInQueueData) {
-    await Promise.all([
-      this.accountModel.update(
-        { telegramUserId: data.telegramUserId },
-        { lastConversationUserID: data.pairedWithTelegramUserChatId },
-      ),
-      this.accountModel.update(
-        { telegramUserId: data.pairedWithTelegramUserChatId },
-        { lastConversationUserID: data.telegramUserId },
-      ),
-    ]);
+    // await Promise.all([
+    //   this.accountModel.update(
+    //     { telegramUserId: data.telegramUserId },
+    //     { lastConversationUserID: data.pairedWithTelegramUserChatId },
+    //   ),
+    //   this.accountModel.update(
+    //     { telegramUserId: data.pairedWithTelegramUserChatId },
+    //     { lastConversationUserID: data.telegramUserId },
+    //   ),
+    // ]);
     return this.queueModel.update(
       { telegramUserId: data.telegramUserId },
       {
@@ -111,7 +111,7 @@ export default class ChatRepository {
     const baseConditions = {
       pairedWithTelegramUserChatId: IsNull(),
       chatId: Not(chatId),
-      telegramUserId: Not(account.lastConversationUserID),
+      // telegramUserId: Not(account.lastConversationUserID),
     };
     let user = null;
 

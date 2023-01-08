@@ -76,4 +76,9 @@ export class AccountController {
   getCount() {
     return this.service.countAccounts();
   }
+
+  @Get('referrals/:userID')
+  getReferralsStatistics(@Param('userID') userID: any) {
+    return this.service.getReferralsStatistics(userID);
+  }
 }
